@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -78,6 +81,7 @@ fun RiseUpApp(quote: String, author: String) {
     val dailyIcon = icons[dayOfYear % icons.size]
     val context = LocalContext.current
     var visible by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(getFavorites(context).contains(quote to author)) }
 
     LaunchedEffect(Unit) {
         visible = true
@@ -85,18 +89,26 @@ fun RiseUpApp(quote: String, author: String) {
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    val sendIntent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, "\"$quote\" - $author")
-                        type = "text/plain"
-                    }
-                    context.startActivity(Intent.createChooser(sendIntent, "Share via"))
-                },
-                containerColor = Color(0xFFf57c00)
-            ) {
-                Icon(Icons.Default.Share, contentDescription = "Share")
+            Column {
+                FloatingActionButton(
+                    onClick = {
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "\"$quote\" - $author")
+                            type = "text/plain"
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, "Share via"))
+                    },
+                    containerColor = Color(0xFFf57c00)
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = "Share")
+                }
+                FloatingActionButton(
+                    onClick = { context.startActivity(Intent(context, FavoritesActivity::class.java)) },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(Icons.Default.Favorite, contentDescription = "Favorites")
+                }
             }
         }
     ) {
@@ -131,11 +143,26 @@ fun RiseUpApp(quote: String, author: String) {
                                 )
                             }
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                            Text(
-                                text = "- $author",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "- $author",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                IconButton(onClick = {
+                                    if (isFavorite) {
+                                        removeFavorite(context, quote to author)
+                                    } else {
+                                        saveFavorite(context, quote to author)
+                                    }
+                                    isFavorite = !isFavorite
+                                }) {
+                                    Icon(
+                                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                                        contentDescription = "Save Favorite"
+                                    )
+                                }
+                            }
                         }
                     }
                 }
