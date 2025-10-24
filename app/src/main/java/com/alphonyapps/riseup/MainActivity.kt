@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +17,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.alphonyapps.riseup.ui.theme.Purple40
+import com.alphonyapps.riseup.ui.theme.Purple80
 import com.alphonyapps.riseup.ui.theme.RiseUpTheme
 import org.json.JSONArray
 import java.util.Calendar
@@ -54,20 +58,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RiseUpApp(quote: String, author: String) {
+    val gradientBrush = Brush.verticalGradient(
+        colors = listOf(Purple80, Purple40)
+    )
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
     ) {
         val context = LocalContext.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(gradientBrush)
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "\"\"$quote\"\"",
+                text = "\"$quote\"",
                 style = MaterialTheme.typography.headlineSmall
             )
             Text(
@@ -80,7 +87,7 @@ fun RiseUpApp(quote: String, author: String) {
                 onClick = {
                     val sendIntent = Intent().apply {
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, "\"\"$quote\"\" - $author")
+                        putExtra(Intent.EXTRA_TEXT, "\"$quote\" - $author")
                         type = "text/plain"
                     }
                     context.startActivity(Intent.createChooser(sendIntent, "Share via"))
