@@ -72,8 +72,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RiseUpApp(quote: String, author: String) {
     val colors = listOf(Color(0xFF6DD5FA), Color(0xFFB993D6), Color(0xFFFFD194))
+    val icons = listOf("🌞", "🌱", "💪", "🚀", "✨", "🎉", "💖", "🌟", "🔥", "💡")
     val dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
     val backgroundColor = colors[dayOfYear % colors.size]
+    val dailyIcon = icons[dayOfYear % icons.size]
     val context = LocalContext.current
     var visible by remember { mutableStateOf(false) }
 
@@ -117,12 +119,16 @@ fun RiseUpApp(quote: String, author: String) {
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            Row() {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = dailyIcon,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
                                 Text(
                                     text = "\"$quote\"",
-                                    style = MaterialTheme.typography.headlineSmall
+                                    style = MaterialTheme.typography.headlineSmall,
                                 )
-                                Text("🌞", modifier = Modifier.padding(start = 4.dp))
                             }
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                             Text(
