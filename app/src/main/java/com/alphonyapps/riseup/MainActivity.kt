@@ -5,22 +5,35 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.alphonyapps.riseup.ui.theme.Purple40
@@ -64,39 +77,16 @@ fun RiseUpApp(quote: String, author: String) {
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Purple80, Purple40)
     )
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        val context = LocalContext.current
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(gradientBrush)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "\"$quote\"",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    Text(
-                        text = "- $author",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
+    val context = LocalContext.current
+    var visible by remember { mutableStateOf(false) }
 
-            Button(
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
                 onClick = {
                     val sendIntent = Intent().apply {
                         action = Intent.ACTION_SEND
@@ -105,9 +95,48 @@ fun RiseUpApp(quote: String, author: String) {
                     }
                     context.startActivity(Intent.createChooser(sendIntent, "Share via"))
                 },
-                modifier = Modifier.padding(top = 24.dp)
+                containerColor = Color(0xFFf57c00)
             ) {
-                Text("Share")
+                Icon(Icons.Default.Share, contentDescription = "Share")
+            }
+        }
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(it),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(gradientBrush)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AnimatedVisibility(visible = visible) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Row() {
+                                Text(
+                                    text = "\"$quote\"",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                                Text("🌞", modifier = Modifier.padding(start = 4.dp))
+                            }
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                            Text(
+                                text = "- $author",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
