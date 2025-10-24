@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,12 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.alphonyapps.riseup.ui.theme.Purple40
-import com.alphonyapps.riseup.ui.theme.Purple80
 import com.alphonyapps.riseup.ui.theme.RiseUpTheme
 import org.json.JSONArray
 import java.util.Calendar
@@ -74,9 +71,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RiseUpApp(quote: String, author: String) {
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(Purple80, Purple40)
-    )
+    val colors = listOf(Color(0xFF6DD5FA), Color(0xFFB993D6), Color(0xFFFFD194))
+    val dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+    val backgroundColor = colors[dayOfYear % colors.size]
     val context = LocalContext.current
     var visible by remember { mutableStateOf(false) }
 
@@ -101,13 +98,12 @@ fun RiseUpApp(quote: String, author: String) {
             }
         }
     ) {
-        Surface(
-            modifier = Modifier.fillMaxSize().padding(it),
+        Box(
+            modifier = Modifier.fillMaxSize().background(backgroundColor).padding(it)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(gradientBrush)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
